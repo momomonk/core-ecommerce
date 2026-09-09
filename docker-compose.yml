@@ -1,17 +1,132 @@
 version: '3.8'
 
 services:
-  app:
+  user-service:
     build:
-      context: ./Front-end/coreui-free-react-admin-template-main/coreui-free-react-admin-template-main
+      context: ./Back-end/user-service    # Ajustado a la ruta real de tu proyecto
       dockerfile: Dockerfile
-    container_name: frontend_app
-    restart: always
+    container_name: user_service
     ports:
-      - "3000:3000"
-    volumes:
-      - ./Front-end/coreui-free-react-admin-template-main/coreui-free-react-admin-template-main:/app
-      - /app/node_modules
+      - "3009:3009"
     environment:
-      - WATCHMAN_FALLBACK_ROOT=true
-    command: npm start -- --host
+      - NODE_ENV=production
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=ecommerce
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - postgres_db
+    restart: always
+
+  businesses-service:
+    build:
+      context: ./Back-end/businesses-service
+      dockerfile: Dockerfile
+    container_name: business_service
+    ports:
+      - "3010:3010"
+    environment:
+      - NODE_ENV=production
+      - PORT=3010
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=ecommerce
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - postgres_db
+    restart: always
+
+  auth-service:
+    build:
+      context: ./Back-end/auth-service
+      dockerfile: Dockerfile
+    container_name: auth_service
+    ports:
+      - "3011:3011"
+    environment:
+      - NODE_ENV=production
+      - PORT=3011
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=ecommerce
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - postgres_db
+    restart: always
+
+  product-service:
+    build:
+      context: ./Back-end/product-service
+      dockerfile: Dockerfile
+    container_name: product_service
+    ports:
+      - "3012:3012"
+    environment:
+      - NODE_ENV=production
+      - PORT=3012
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=ecommerce
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - postgres_db
+    restart: always
+
+  order-service:
+    build:
+      context: ./Back-end/order-service
+      dockerfile: Dockerfile
+    container_name: order_service
+    ports:
+      - "3013:3013"
+    environment:
+      - NODE_ENV=production
+      - PORT=3013
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - DB_NAME=ecommerce
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - postgres_db
+    restart: always
+
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    restart: always
+
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ecommerce
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:

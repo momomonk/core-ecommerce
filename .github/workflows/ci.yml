@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -7,23 +7,32 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-backend:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        service: 
+          - auth-service
+          - businesses-service
+          - order-service
+          - product-service
+          - roles-service
+          - user-service
+
     steps:
-    # 1. Descarga el código de tu repositorio
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # 2. Configura el entorno (por ejemplo, Node.js)
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: Set up Node.js v20.20.2
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.20.2'
 
-    # 3. Instala dependencias y corre pruebas (si las tienes)
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies (${{ matrix.service }})
+        run: npm ci
+        working-directory: Back-end/${{ matrix.service }}
 
-    - name: Run build/test
-      run: npm test --if-present
+      - name: Build service (${{ matrix.service }})
+        run: npm run build
+        working-directory: Back-end/${{ matrix.service }}
