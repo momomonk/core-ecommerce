@@ -1,5 +1,8 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-yet';
+
 import { typeOrmConfig } from './infrastructure/persistence/typeorm.config'; 
 import { UserController } from './infrastructure/transport/http/user.controller';
 import { ListUsersUseCase } from './application/use-cases/list-users.use-case';
@@ -14,8 +17,20 @@ import { AuthApiService } from './infrastructure/persistence/services/auth-api.s
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(typeOrmConfig), // Pasamos la config externa
+    TypeOrmModule.forRoot(typeOrmConfig),
     TypeOrmModule.forFeature([UserOrmEntity]),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => ({
+        store: await redisStore({
+          socket: {
+            host: process.env.REDIS_HOST || 'localhost',
+            port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          },
+          ttl: 3600 * 1000,
+        }),
+      }),
+    }),
   ],
   controllers: [UserController],
   providers: [

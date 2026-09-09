@@ -3,7 +3,7 @@ import axios from 'axios';
 
 @Injectable()
 export class AuthApiService {
-  private readonly authServiceUrl = 'http://localhost:3011/auth/validate-token'; 
+  private readonly authServiceUrl = 'http://auth-service:3011/auth/validate-token'; 
 
   async validateTokenWithAuthService(token: string): Promise<any> {
     try {

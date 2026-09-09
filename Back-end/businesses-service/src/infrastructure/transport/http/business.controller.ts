@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Patch, Put, Param, Body, Query, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ListBusinessUseCase } from '../../../application/use-cases/list-business.use-case';
+import { ListBusinessesUseCase } from '../../../application/use-cases/list-businesses.use-case';
 import { CreateBusinessUseCase } from '../../../application/use-cases/create-business.use-case';
+import { GetBusinessUseCase } from '../../../application/use-cases/get-business.use-case';
 import { ChangeBusinessNameUseCase } from 'src/application/use-cases/change-business-name.use-case';
 import { ChangeBusinessSlugUseCase } from 'src/application/use-cases/change-business-slug.use-case';
 import { ChangeBusinessStatusUseCase } from '../../../application/use-cases/change-business-status.use-case';
@@ -16,12 +17,13 @@ import { IdParamDto } from './dto/id-param.dto';
 @Controller('businesses')
 export class BusinessController {
   constructor(
-    private readonly listBusinesses: ListBusinessUseCase,
+    private readonly listBusinesses: ListBusinessesUseCase,
     private readonly createBusiness: CreateBusinessUseCase,
     private readonly changeBusinessStatus: ChangeBusinessStatusUseCase,
     private readonly changeBusinessSlug: ChangeBusinessSlugUseCase,
     private readonly changeBusinessName: ChangeBusinessNameUseCase,
     private readonly updateBusiness: UpdateBusinessUseCase,
+    private readonly getBusiness: GetBusinessUseCase, 
   ) {}
 
   @Get()
@@ -29,6 +31,14 @@ export class BusinessController {
   async getAll(@Query() pagination: PaginationDto) {
     const { page = 1, limit = 10 } = pagination;
     return await this.listBusinesses.execute(page, limit);
+  }
+
+  @Get(':id')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async findBusiness(
+    @Param('id') id: string
+  ) {
+    return await this.getBusiness.execute(id);
   }
 
   @Post()

@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './infrastructure/persistence/typeorm.config'; 
 import { BusinessController } from './infrastructure/transport/http/business.controller';
 import { BusinessSettingsController } from './infrastructure/transport/http/business-settings.controller';
-import { ListBusinessUseCase } from './application/use-cases/list-business.use-case';
+import { ListBusinessesUseCase } from './application/use-cases/list-businesses.use-case';
 import { CreateBusinessUseCase } from './application/use-cases/create-business.use-case';
 import { UpdateBusinessUseCase } from './application/use-cases/update-business.use-case';
 import { ChangeBusinessStatusUseCase } from './application/use-cases/change-business-status.use-case';
@@ -19,6 +19,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ChangeBusinessSettingsThemeConfigUseCase } from './application/use-cases/change-business-settings-theme-config.use-case';
 import { ChangeBusinessSettingsDomainSettingsUseCase } from './application/use-cases/change-business-settings-domain-settings.use-case';
 import { ChangeBusinessSlugUseCase } from './application/use-cases/change-business-slug.use-case';
+import { GetBusinessUseCase } from './application/use-cases/get-business.use-case';
 
 @Module({
   imports: [
@@ -27,8 +28,9 @@ import { ChangeBusinessSlugUseCase } from './application/use-cases/change-busine
   ],
   controllers: [BusinessController, BusinessSettingsController],
   providers: [
-    ListBusinessUseCase,
+    ListBusinessesUseCase,
     CreateBusinessUseCase,
+    GetBusinessUseCase,
     UpdateBusinessUseCase,
     ChangeBusinessNameUseCase,
     ChangeBusinessStatusUseCase,

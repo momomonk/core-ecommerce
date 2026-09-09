@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./Front-end/coreui-free-react-admin-template-main/coreui-free-react-admin-template-main
+      dockerfile: Dockerfile
+    container_name: frontend_app
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Front-end/coreui-free-react-admin-template-main/coreui-free-react-admin-template-main:/app
+      - /app/node_modules
+    environment:
+      - WATCHMAN_FALLBACK_ROOT=true
+    command: npm start -- --host

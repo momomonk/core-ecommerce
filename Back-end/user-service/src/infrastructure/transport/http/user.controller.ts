@@ -10,7 +10,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { IdParamDto } from './dto/id-param.dto';
 import { AuthApiGuard } from '../../../common/guards/auth-api.guards';
 
-@UseGuards(AuthApiGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -20,6 +19,14 @@ export class UserController {
     private readonly updateUser: UpdateUserUseCase,
   ) {}
 
+  // 🔓 Ruta PÚBLICA: No requiere token para poder registrarse
+  @Post()
+  async create(@Body() body: CreateUserDto) {
+    return await this.createUser.execute(body);
+  }
+
+  // 🔒 Rutas PROTEGIDAS: Exigen el token mediante el guardia
+  @UseGuards(AuthApiGuard)
   @Get()
   @UsePipes(new ValidationPipe({ transform: true })) 
   async getAll(@Query() pagination: PaginationDto) {
@@ -27,11 +34,7 @@ export class UserController {
     return await this.listUsers.execute(page, limit);
   }
 
-  @Post()
-  async create(@Body() body: CreateUserDto) {
-    return await this.createUser.execute(body);
-  }
-
+  @UseGuards(AuthApiGuard)
   @Patch(':id/status')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async changeStatus(
@@ -40,6 +43,8 @@ export class UserController {
   ) {
     return await this.changeUserStatus.execute(id, updateStatusDto.status);
   }
+
+  @UseGuards(AuthApiGuard)
   @Put(':id')
   async update(
     @Param() params: IdParamDto,

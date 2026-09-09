@@ -17,7 +17,9 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useLogger(new JsonLogger());
-  await app.listen(process.env.PORT ?? 3010);
+  
+  // Cambia esto para que escuche en 0.0.0.0 y acepte peticiones de Docker:
+  const port = process.env.PORT ?? 3010;
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
-
