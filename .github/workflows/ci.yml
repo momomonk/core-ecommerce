@@ -1,0 +1,29 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descarga el código de tu repositorio
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Configura el entorno (por ejemplo, Node.js)
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    # 3. Instala dependencias y corre pruebas (si las tienes)
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run build/test
+      run: npm test --if-present
